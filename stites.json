@@ -1,0 +1,13 @@
+{
+    "proto": "http://",
+    "base": "localhost",
+    "port": "8888",
+    "links": [
+        {
+            "path": "/",
+			"type": "GET",
+            "argsGet": {},
+            "argsPost": {}
+        }
+    ]
+}
