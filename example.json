@@ -5,9 +5,14 @@
     "links": [
         {
             "path": "/",
-			"type": "GET",
-            "argsGet": {},
-            "argsPost": {}
+			"type": "POST",
+            "argsGet": {
+				"action": ["dostuff"]
+			},
+            "argsPost": {
+				"first": ["lat"],
+				"second": ["long"]
+			}
         }
     ]
 }
