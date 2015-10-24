@@ -24,10 +24,10 @@ type Conf struct {
 }
 
 type Link struct {
-	Path     string            `json:path`
-	Type     string            `json:type`
-	ArgsGet  map[string]string `json:argsGet`
-	ArgsPost map[string]string `json:argsPost`
+	Path     string     `json:path`
+	Type     string     `json:type`
+	ArgsGet  url.Values `json:argsGet`
+	ArgsPost url.Values `json:argsPost`
 }
 
 func main() {
@@ -62,20 +62,13 @@ func main() {
 
 	for _, testURL := range p.Links {
 
-		postParam := url.Values{}
-		for key, param := range testURL.ArgsPost {
-			postParam.Add(key, param)
-		}
-		getParam := url.Values{}
-		for key, param := range testURL.ArgsGet {
-			getParam.Add(key, param)
-		}
-
-		completeURL, err := PrepareURL(p.Proto+p.Base+testURL.Path, getParam)
+		// prepare the url
+		completeURL, err := PrepareURL(p.Proto+p.Base+testURL.Path, testURL.ArgsGet)
 		if err != nil {
 			log.Fatal(err)
 		}
-		rawHTTP, err := RawHTTP(testURL.Type, completeURL, postParam)
+		// get the raw http
+		rawHTTP, err := RawHTTP(testURL.Type, completeURL, testURL.ArgsPost)
 		if err != nil {
 			log.Fatal(err)
 		}
