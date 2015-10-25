@@ -98,7 +98,10 @@ func main() {
 		t0 = time.Now()
 		r := bufio.NewReader(conn)
 		for {
-			b, _, _ := r.ReadLine()
+			b, _, err := r.ReadLine()
+			if err != nil {
+				break // ignore errors, read only the data
+			}
 			if strings.TrimSpace(string(b)) == "" {
 				break
 			}
