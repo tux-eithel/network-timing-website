@@ -1,3 +1,12 @@
+// network_timing_website.go: small utility to test the
+// timing of a website. Reads the input json file, like example.json
+// and makes the requests.
+// For each request you can specify the type of the request (GET or POST)
+// and the get or posts params.
+// For each "link", the script measures the time to resolve the address ("resolv")
+// time to establish the tcp connection ("conn"), time to send the data through
+// the connection ("send data") and finally the time to receive the data ("receive data").
+// Requests are made sequentially
 package main
 
 import (
@@ -13,9 +22,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
+// Conf defines the struct for decode the json
 type Conf struct {
 	Proto string `json:proto`
 	Base  string `json:base`
@@ -23,6 +34,7 @@ type Conf struct {
 	Links []Link `json:link`
 }
 
+// Link defines a single request to the website
 type Link struct {
 	Path     string     `json:path`
 	Type     string     `json:type`
@@ -106,7 +118,7 @@ func main() {
 				break
 			}
 		}
-		fmt.Println("recieve data:", time.Since(t0))
+		fmt.Println("receive data:", time.Since(t0))
 
 		// close connection
 		conn.Close()
