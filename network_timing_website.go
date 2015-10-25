@@ -96,27 +96,24 @@ func main() {
 
 		// read data
 		t0 = time.Now()
-		resp, err := http.ReadResponse(bufio.NewReader(conn), nil)
-		if err != nil {
-			log.Fatal("error creating response: " + err.Error())
+		r := bufio.NewReader(conn)
+		for {
+			b, _, _ := r.ReadLine()
+			if strings.TrimSpace(string(b)) == "" {
+				break
+			}
 		}
+		fmt.Println("recieve data:", time.Since(t0))
 
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal("error reading response: " + err.Error())
-		}
-		resp.Body.Close()
-
-		if len(body) <= 0 && err == nil {
-			log.Fatal("empty response")
-		}
-		fmt.Println("recive data:", time.Since(t0))
+		// close connection
+		conn.Close()
 	}
 
 }
 
-// PrepareURL takes a base string (likes "http://site.com/") and a map of param-value and builds the url.
-// This functions are been made to use the "net/url" package
+// PrepareURL takes a base string (likes "http://site.com/") and a
+// map of param-value and builds the url.
+// This function have been made to use the "net/url" package
 func PrepareURL(base string, params url.Values) (string, error) {
 
 	encode := params.Encode()
