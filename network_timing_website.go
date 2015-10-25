@@ -131,22 +131,23 @@ func PrepareURL(base string, params url.Values) (string, error) {
 }
 
 // RawHTTP brings an url and returns a raw http request based from https://tools.ietf.org/html/rfc2068
+// It accepts the conn type, and the data to send in body.
 func RawHTTP(connType, inURL string, data url.Values) (string, error) {
 
 	_, err := url.Parse(inURL)
 	if err != nil {
-		return "", errors.New("input url ->" + err.Error())
+		return "", errors.New("input url: " + err.Error())
 	}
 
 	// prepare the header
 	req, err := http.NewRequest(connType, inURL, bytes.NewBufferString(data.Encode()))
 	if err != nil {
-		return "", errors.New("preparing header -> " + err.Error())
+		return "", errors.New("preparing header: " + err.Error())
 	}
 	var header bytes.Buffer
 	err = req.Write(&header)
 	if err != nil {
-		return "", errors.New("reading header -> " + err.Error())
+		return "", errors.New("reading header: " + err.Error())
 	}
 
 	return header.String(), nil
