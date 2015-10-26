@@ -116,6 +116,7 @@ func main() {
 		}
 
 		fmt.Println("receive data:", time.Since(t0))
+		fmt.Println()
 
 		// close connection
 		conn.Close()
