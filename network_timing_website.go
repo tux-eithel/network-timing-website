@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -104,15 +103,14 @@ func main() {
 		// read data
 		t0 = time.Now()
 
-		r := bufio.NewReader(conn)
-		for {
-			b, _, err := r.ReadLine()
-			if err != nil {
-				break // ignore errors, read only the data
-			}
-			if strings.TrimSpace(string(b)) == "" {
-				break
-			}
+		resp, err := http.ReadResponse(bufio.NewReader(conn), nil)
+		if err != nil {
+			log.Fatalln("error creating response: " + err.Error())
+		}
+
+		_, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			resp.Body.Close()
 		}
 
 		fmt.Println("receive data:", time.Since(t0))
@@ -120,6 +118,7 @@ func main() {
 
 		// close connection
 		conn.Close()
+
 	}
 
 }
