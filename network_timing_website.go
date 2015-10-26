@@ -74,13 +74,8 @@ func main() {
 
 	for _, testURL := range p.Links {
 
-		// prepare the url
-		completeURL, err := PrepareURL(p.Proto+p.Base+testURL.Path, testURL.ArgsGet)
-		if err != nil {
-			log.Fatal(err)
-		}
 		// get the raw http
-		rawHTTP, err := RawHTTP(testURL.Type, completeURL, testURL.ArgsPost)
+		rawHTTP, err := RawHTTP(testURL.Type, p.Proto+p.Base+testURL.Path, testURL.ArgsGet, testURL.ArgsPost)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -108,6 +103,7 @@ func main() {
 
 		// read data
 		t0 = time.Now()
+
 		r := bufio.NewReader(conn)
 		for {
 			b, _, err := r.ReadLine()
@@ -118,6 +114,7 @@ func main() {
 				break
 			}
 		}
+
 		fmt.Println("receive data:", time.Since(t0))
 
 		// close connection
@@ -126,12 +123,11 @@ func main() {
 
 }
 
-// PrepareURL takes a base string (likes "http://site.com/") and a
-// map of param-value and builds the url.
-// This function have been made to use the "net/url" package
-func PrepareURL(base string, params url.Values) (string, error) {
+// RawHTTP brings an url and returns a raw http request based from https://tools.ietf.org/html/rfc2068
+// It accepts the conn type, and the data to send in body.
+func RawHTTP(connType, base string, dataGet, dataPost url.Values) (string, error) {
 
-	encode := params.Encode()
+	encode := dataGet.Encode()
 	if encode != "" {
 		encode = "?" + encode
 	}
@@ -142,24 +138,16 @@ func PrepareURL(base string, params url.Values) (string, error) {
 		return "", errors.New("unable to create url: " + err.Error())
 	}
 
-	return url.String(), nil
-}
-
-// RawHTTP brings an url and returns a raw http request based from https://tools.ietf.org/html/rfc2068
-// It accepts the conn type, and the data to send in body.
-func RawHTTP(connType, inURL string, data url.Values) (string, error) {
-
-	_, err := url.Parse(inURL)
-	if err != nil {
-		return "", errors.New("input url: " + err.Error())
-	}
-
 	// prepare the header
-	req, err := http.NewRequest(connType, inURL, bytes.NewBufferString(data.Encode()))
+	body := bytes.NewBufferString(dataPost.Encode())
+	req, err := http.NewRequest(connType, url.String(), body)
 	if err != nil {
 		return "", errors.New("preparing header: " + err.Error())
 	}
 	var header bytes.Buffer
+	if connType == "POST" {
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
 	err = req.Write(&header)
 	if err != nil {
 		return "", errors.New("reading header: " + err.Error())
