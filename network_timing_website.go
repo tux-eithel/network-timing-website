@@ -27,18 +27,18 @@ import (
 
 // Conf defines the struct for decode the json
 type Conf struct {
-	Proto string `json:proto`
-	Base  string `json:base`
-	Port  string `json:port`
-	Links []Link `json:link`
+	Proto string `json:"proto"`
+	Base  string `json:"base"`
+	Port  string `json:"port"`
+	Links []Link `json:"links"`
 }
 
 // Link defines a single request to the website
 type Link struct {
-	Path     string     `json:path`
-	Type     string     `json:type`
-	ArgsGet  url.Values `json:argsGet`
-	ArgsPost url.Values `json:argsPost`
+	Path     string     `json:"path"`
+	Type     string     `json:"type"`
+	ArgsGet  url.Values `json:"argsGet"`
+	ArgsPost url.Values `json:"argsPost"`
 }
 
 func main() {
